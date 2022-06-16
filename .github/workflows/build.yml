@@ -90,6 +90,16 @@ jobs:
             custom_gnargs: use_custom_libcxx=false use_glib=false
             gclient_os: '["linux"]'
             os: ubuntu-20.04
+          - target_os: linux    
+            arch: arm64
+            custom_gnargs: use_custom_libcxx=false use_glib=false
+            gclient_os: '["linux"]'
+            os: ubuntu-20.04
+          - target_os: linux
+            arch: arm
+            custom_gnargs: use_custom_libcxx=false use_glib=false
+            gclient_os: '["linux"]'
+            os: ubuntu-20.04
 
           # macOS
           - target_os: mac
