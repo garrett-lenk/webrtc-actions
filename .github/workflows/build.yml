@@ -150,6 +150,7 @@ jobs:
         if: ${{ matrix.target_os == 'linux' }}
         run: |
           sudo dpkg --add-architecture i386
+          sudo dpkg --add-architecture arm64
           sudo apt-get install clang gcc gcc-multilib g++ g++-multilib
 
       - name: Install depot tools
@@ -181,11 +182,11 @@ jobs:
           sed -i 's|:static_crt|:dynamic_crt|' src/build/config/win/BUILD.gn
           cat src/build/config/win/BUILD.gn
 
-      - name: Install arm64 arch
-        shell: bash
-        working-directory: out
-        run: |
-          build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
+      # - name: Install arm64 arch
+      #   shell: bash
+      #   working-directory: out
+      #   run: |
+      #     build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
 
       - name: Tar headers
         id: tar-headers
