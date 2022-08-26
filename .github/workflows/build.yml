@@ -46,21 +46,29 @@ jobs:
           #   custom_gnargs: use_custom_libcxx=false
           #   gclient_os: '["android", "unix"]'
           #   os: ubuntu-20.04
-          # - target_os: android
-          #   arch: arm64
-          #   custom_gnargs: use_custom_libcxx=false
-          #   gclient_os: '["android", "unix"]'
-          #   os: ubuntu-20.04
+          #   library_name: "libwebrtc.so"
+
+          - target_os: android
+            arch: arm64
+            custom_gnargs: use_custom_libcxx=false
+            gclient_os: '["android", "unix"]'
+            os: ubuntu-20.04
+            library_name: "libwebrtc.so"
+
           # - target_os: android
           #   arch: x86
           #   custom_gnargs: use_custom_libcxx=false
           #   gclient_os: '["android", "unix"]'
           #   os: ubuntu-20.04
+          #   library_name: "libwebrtc.so"
+
           # - target_os: android
           #   arch: x64
           #   custom_gnargs: use_custom_libcxx=false
           #   gclient_os: '["android", "unix"]'
           #   os: ubuntu-20.04
+          #   library_name: "libwebrtc.so"
+
 
           # iOS
           # - target_os: ios
@@ -85,35 +93,46 @@ jobs:
           #   custom_gnargs: use_custom_libcxx=false use_glib=false
           #   gclient_os: '["linux"]'
           #   os: ubuntu-20.04
+          #   library_name: "libwebrtc.so"
+
           - target_os: linux
             arch: x64
             custom_gnargs: use_custom_libcxx=false use_glib=false
             gclient_os: '["linux"]'
             os: ubuntu-20.04
+            library_name: "libwebrtc.so"
+
           # - target_os: linux    
           #   arch: arm64
           #   custom_gnargs: use_custom_libcxx=false use_glib=false
           #   gclient_os: '["linux"]'
           #   os: ubuntu-20.04
+          #   library_name: "libwebrtc.so"
+            
+
           # - target_os: linux
           #   arch: arm
           #   custom_gnargs: use_custom_libcxx=false use_glib=false
           #   gclient_os: '["linux"]'
           #   os: ubuntu-20.04
 
-          # # macOS
-          # - target_os: mac
-          #   arch: arm64
-          #   custom_gnargs: use_custom_libcxx=false
-          #   gclient_os: '["mac"]'
-          #   os: macos-latest
+          # macOS
+          - target_os: mac
+            arch: arm64
+            custom_gnargs: use_custom_libcxx=false
+            gclient_os: '["mac"]'
+            os: macos-latest
+            library_name: "libwebrtc.dylib"
+
           # - target_os: mac
           #   arch: x64
           #   custom_gnargs: use_custom_libcxx=false
           #   gclient_os: '["mac"]'
           #   os: macos-latest
+          #   library_name: "libwebrtc.dylib"
 
-          # # Windows
+
+          # Windows
           # - target_os: win
           #   arch: x86
           #   # Windows 32 goes out memory when building libaom release. Disable libaom.
@@ -121,12 +140,16 @@ jobs:
           #   gclient_os: '["win"]'
           #   msvc_arch: amd64_x86
           #   os: windows-2019
-          # - target_os: win
-          #   arch: x64
-          #   custom_gnargs: is_clang=false enable_iterator_debugging=true
-          #   gclient_os: '["win"]'
-          #   msvc_arch: amd64_x86
-          #   os: windows-2019
+          #   library_name: "webrtc.dll"
+
+          - target_os: win
+            arch: x64
+            custom_gnargs: is_clang=false enable_iterator_debugging=true
+            gclient_os: '["win"]'
+            msvc_arch: amd64_x86
+            os: windows-2019
+            library_name: "webrtc.dll"
+
 
     env:
       DEPOT_TOOLS: ${{ github.workspace }}/depot_tools
@@ -193,6 +216,7 @@ jobs:
       - name: Install arm64 arch
         shell: bash
         working-directory: out/src
+        if: ${{ matrix.target_os == 'linux' }}
         run: |
           ./build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
 
@@ -209,13 +233,13 @@ jobs:
           path: out/src/${{ steps.tar-headers.outputs.tarball }}
           retention-days: 1
 
-      - name: Build - Debug
-        shell: bash
-        working-directory: out/src
-        run: |
-          gn gen out --args="${{ env.GNARGS }}"
-          ninja -v -C out webrtc
-          ls ./out
+      # - name: Build - Debug
+      #   shell: bash
+      #   working-directory: out/src
+      #   run: |
+      #     gn gen out --args="${{ env.GNARGS }}"
+      #     ninja -v -C out webrtc
+      #     ls ./out
 
       # - name: Combine - Debug
       #   uses: ./.github/actions/combine_library
@@ -224,13 +248,13 @@ jobs:
       #     platform: ${{ matrix.target_os }}
       #     builddir: out/src/out
 
-      - name: Upload debug artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.TEMP_ARTIFACT }}-debug
-          path: out/src/out/libwebrtc.so
-          #${{ steps.combine-debug.outputs.library }}
-          retention-days: 1
+      # - name: Upload debug artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ${{ env.TEMP_ARTIFACT }}-debug
+      #     path: out/src/out/libwebrtc.so
+      #     #${{ steps.combine-debug.outputs.library }}
+      #     retention-days: 1
 
       # Release
       - name: Build - Release
@@ -238,10 +262,11 @@ jobs:
         working-directory: out/src
         run: |
           echo "Clean up debug build to free up space"
-          rm -rf out
+          
           gn gen out --args="${{ env.GNARGS }} ${{ env.GNARGS_RELEASE }}"
           ninja -v -C out webrtc
           ls ./out
+        # rm -rf out
 
       # - name: Combine - Release
       #   uses: ./.github/actions/combine_library
@@ -254,7 +279,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.TEMP_ARTIFACT }}-release
-          path: out/src/out/libwebrtc.so
+          path: out/src/out/${{ matrix.library_name }}
+          #libwebrtc.so
           #${{ steps.combine-release.outputs.library }}
           retention-days: 1
 
