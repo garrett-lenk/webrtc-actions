@@ -85,16 +85,16 @@ jobs:
           #   custom_gnargs: use_custom_libcxx=false use_glib=false
           #   gclient_os: '["linux"]'
           #   os: ubuntu-20.04
-          # - target_os: linux
-          #   arch: x64
-          #   custom_gnargs: use_custom_libcxx=false use_glib=false
-          #   gclient_os: '["linux"]'
-          #   os: ubuntu-20.04
-          - target_os: linux    
-            arch: arm64
+          - target_os: linux
+            arch: x64
             custom_gnargs: use_custom_libcxx=false use_glib=false
             gclient_os: '["linux"]'
             os: ubuntu-20.04
+          # - target_os: linux    
+          #   arch: arm64
+          #   custom_gnargs: use_custom_libcxx=false use_glib=false
+          #   gclient_os: '["linux"]'
+          #   os: ubuntu-20.04
           # - target_os: linux
           #   arch: arm
           #   custom_gnargs: use_custom_libcxx=false use_glib=false
@@ -131,7 +131,7 @@ jobs:
     env:
       DEPOT_TOOLS: ${{ github.workspace }}/depot_tools
       DEPOT_TOOLS_WIN_TOOLCHAIN: 0
-      GNARGS: 'is_component_build=false rtc_include_tests=false treat_warnings_as_errors=false rtc_build_examples=false use_rtti=true target_os=\"${{ matrix.target_os }}\" target_cpu=\"${{ matrix.arch }}\" ${{ matrix.custom_gnargs }}'
+      GNARGS: 'rtc_enable_symbol_export=true is_component_build=false rtc_include_tests=false treat_warnings_as_errors=false rtc_build_examples=false use_rtti=true target_os=\"${{ matrix.target_os }}\" target_cpu=\"${{ matrix.arch }}\" ${{ matrix.custom_gnargs }}'
       GNARGS_RELEASE: "is_debug=false strip_debug_info=true symbol_level=0"
       OUTPUT_NAME: ${{ needs.config.outputs.name }}-${{ matrix.target_os }}-${{ matrix.arch }}
       TEMP_ARTIFACT: ${{ github.job }}-${{ matrix.target_os }}-${{ matrix.arch }}
@@ -182,6 +182,14 @@ jobs:
           sed -i 's|:static_crt|:dynamic_crt|' src/build/config/win/BUILD.gn
           cat src/build/config/win/BUILD.gn
 
+      - name: Patch WebRTC to build shared library
+        shell: bash
+        working-directory: out/src
+        run: |
+          sed -i 's/rtc_static_library/rtc_shared_library/g' ./BUILD.gn
+          sed -i 's/complete_static_lib/#complete_static_lib/g' ./BUILD.gn
+          cat ./BUILD.gn
+
       - name: Install arm64 arch
         shell: bash
         working-directory: out/src
@@ -207,19 +215,21 @@ jobs:
         run: |
           gn gen out --args="${{ env.GNARGS }}"
           ninja -v -C out webrtc
+          ls ./out
 
-      - name: Combine - Debug
-        uses: ./.github/actions/combine_library
-        id: combine-debug
-        with:
-          platform: ${{ matrix.target_os }}
-          builddir: out/src/out
+      # - name: Combine - Debug
+      #   uses: ./.github/actions/combine_library
+      #   id: combine-debug
+      #   with:
+      #     platform: ${{ matrix.target_os }}
+      #     builddir: out/src/out
 
       - name: Upload debug artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.TEMP_ARTIFACT }}-debug
-          path: out/src/out/${{ steps.combine-debug.outputs.library }}
+          path: out/src/out/libwebrtc.so
+          #${{ steps.combine-debug.outputs.library }}
           retention-days: 1
 
       # Release
@@ -231,19 +241,21 @@ jobs:
           rm -rf out
           gn gen out --args="${{ env.GNARGS }} ${{ env.GNARGS_RELEASE }}"
           ninja -v -C out webrtc
+          ls ./out
 
-      - name: Combine - Release
-        uses: ./.github/actions/combine_library
-        id: combine-release
-        with:
-          platform: ${{ matrix.target_os }}
-          builddir: out/src/out
+      # - name: Combine - Release
+      #   uses: ./.github/actions/combine_library
+      #   id: combine-release
+      #   with:
+      #     platform: ${{ matrix.target_os }}
+      #     builddir: out/src/out
 
       - name: Upload release artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.TEMP_ARTIFACT }}-release
-          path: out/src/out/${{ steps.combine-release.outputs.library }}
+          path: out/src/out/libwebrtc.so
+          #${{ steps.combine-release.outputs.library }}
           retention-days: 1
 
       - name: Cleanup space
