@@ -209,8 +209,8 @@ jobs:
         shell: bash
         working-directory: out/src
         run: |
-          sed -i 's/rtc_static_library/rtc_shared_library/g' ./BUILD.gn
-          sed -i 's/complete_static_lib/#complete_static_lib/g' ./BUILD.gn
+          sed -i'.bkp' -e 's/rtc_static_library/rtc_shared_library/g' ./BUILD.gn
+          sed -i'.bkp' -e 's/complete_static_lib/#complete_static_lib/g' ./BUILD.gn
           cat ./BUILD.gn
 
       - name: Install arm64 arch
@@ -289,11 +289,11 @@ jobs:
         run: |
           rm -rf out
 
-      - name: Download library artifact - Debug
-        uses: actions/download-artifact@v2
-        with:
-          path: ${{ matrix.target_os }}/lib/${{ matrix.arch }}/Debug
-          name: ${{ env.TEMP_ARTIFACT }}-debug
+      # - name: Download library artifact - Debug
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     path: ${{ matrix.target_os }}/lib/${{ matrix.arch }}/Debug
+      #     name: ${{ env.TEMP_ARTIFACT }}-debug
 
       - name: Download library artifact - Release
         uses: actions/download-artifact@v2
