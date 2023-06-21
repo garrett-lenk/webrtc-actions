@@ -173,8 +173,12 @@ jobs:
         if: ${{ matrix.target_os == 'linux' }}
         run: |
           sudo dpkg --add-architecture i386
-          sudo dpkg --add-architecture arm64
           sudo apt-get install clang gcc gcc-multilib g++ g++-multilib
+
+      - name: Install Ninja
+        shell: bash
+        run: |
+          pip install ninja
 
       - name: Install depot tools
         shell: bash
@@ -213,12 +217,12 @@ jobs:
           sed -i'.bkp' -e 's/complete_static_lib/#complete_static_lib/g' ./BUILD.gn
           cat ./BUILD.gn
 
-      - name: Install arm64 arch
-        shell: bash
-        working-directory: out/src
-        if: ${{ matrix.target_os == 'linux' }}
-        run: |
-          ./build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
+      # - name: Install arm64 arch
+      #   shell: bash
+      #   working-directory: out/src
+      #   if: ${{ matrix.target_os == 'linux' }}
+      #   run: |
+      #     ./build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
 
       - name: Tar headers
         id: tar-headers
