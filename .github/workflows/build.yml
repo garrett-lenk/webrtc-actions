@@ -95,12 +95,12 @@ jobs:
           #   os: ubuntu-20.04
           #   library_name: "libwebrtc.so"
 
-          - target_os: linux
-            arch: x64
-            custom_gnargs: use_custom_libcxx=false use_glib=false
-            gclient_os: '["linux"]'
-            os: ubuntu-20.04
-            library_name: "libwebrtc.so"
+          # - target_os: linux
+          #   arch: x64
+          #   custom_gnargs: use_custom_libcxx=false use_glib=false
+          #   gclient_os: '["linux"]'
+          #   os: ubuntu-20.04
+          #   library_name: "libwebrtc.so"
 
           # - target_os: linux    
           #   arch: arm64
@@ -142,13 +142,13 @@ jobs:
           #   os: windows-2019
           #   library_name: "webrtc.dll"
 
-          # - target_os: win
-          #   arch: x64
-          #   custom_gnargs: is_clang=false enable_iterator_debugging=true
-          #   gclient_os: '["win"]'
-          #   msvc_arch: amd64_x86
-          #   os: windows-2019
-          #   library_name: "webrtc.dll"
+          - target_os: win
+            arch: x64
+            custom_gnargs: is_clang=false enable_iterator_debugging=true
+            gclient_os: '["win"]'
+            msvc_arch: amd64_x86
+            os: windows-2019
+            library_name: "webrtc.dll"
 
 
     env:
@@ -217,12 +217,12 @@ jobs:
           sed -i'.bkp' -e 's/complete_static_lib/#complete_static_lib/g' ./BUILD.gn
           cat ./BUILD.gn
 
-      # - name: Install arm64 arch
-      #   shell: bash
-      #   working-directory: out/src
-      #   if: ${{ matrix.target_os == 'linux' }}
-      #   run: |
-      #     ./build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
+      - name: Install arm64 arch
+        shell: bash
+        working-directory: out/src
+        if: ${{ matrix.target_os == 'linux' }}
+        run: |
+          ./build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
 
       - name: Tar headers
         id: tar-headers
