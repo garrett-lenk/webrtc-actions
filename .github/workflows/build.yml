@@ -48,12 +48,12 @@ jobs:
           #   os: ubuntu-20.04
           #   library_name: "libwebrtc.so"
 
-          - target_os: android
-            arch: arm64
-            custom_gnargs: use_custom_libcxx=false
-            gclient_os: '["android", "unix"]'
-            os: ubuntu-20.04
-            library_name: "libwebrtc.so"
+          # - target_os: android
+          #   arch: arm64
+          #   custom_gnargs: use_custom_libcxx=false
+          #   gclient_os: '["android", "unix"]'
+          #   os: ubuntu-20.04
+          #   library_name: "libwebrtc.so"
 
           # - target_os: android
           #   arch: x86
@@ -117,12 +117,12 @@ jobs:
           #   os: ubuntu-20.04
 
           # macOS
-          - target_os: mac
-            arch: arm64
-            custom_gnargs: use_custom_libcxx=false
-            gclient_os: '["mac"]'
-            os: macos-latest
-            library_name: "libwebrtc.dylib"
+          # - target_os: mac
+          #   arch: arm64
+          #   custom_gnargs: use_custom_libcxx=false
+          #   gclient_os: '["mac"]'
+          #   os: macos-latest
+          #   library_name: "libwebrtc.dylib"
 
           # - target_os: mac
           #   arch: x64
@@ -142,13 +142,13 @@ jobs:
           #   os: windows-2019
           #   library_name: "webrtc.dll"
 
-          - target_os: win
-            arch: x64
-            custom_gnargs: is_clang=false enable_iterator_debugging=true
-            gclient_os: '["win"]'
-            msvc_arch: amd64_x86
-            os: windows-2019
-            library_name: "webrtc.dll"
+          # - target_os: win
+          #   arch: x64
+          #   custom_gnargs: is_clang=false enable_iterator_debugging=true
+          #   gclient_os: '["win"]'
+          #   msvc_arch: amd64_x86
+          #   os: windows-2019
+          #   library_name: "webrtc.dll"
 
 
     env:
@@ -265,7 +265,7 @@ jobs:
           
           gn gen out --args="${{ env.GNARGS }} ${{ env.GNARGS_RELEASE }}"
           ninja -v -C out webrtc
-          ls ./out
+          ls -R ./out
         # rm -rf out
 
       # - name: Combine - Release
