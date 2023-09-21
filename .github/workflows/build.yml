@@ -207,6 +207,7 @@ jobs:
         working-directory: out
         run: |
           sed -i 's|:static_crt|:dynamic_crt|' src/build/config/win/BUILD.gn
+          sed -i 's|:"/Zc:sizedDealloc-",|:"/Zc:sizedDealloc-","/Zc:threadSafeInit-",|' src/build/config/win/BUILD.gn
           cat src/build/config/win/BUILD.gn
 
       - name: Patch WebRTC to build shared library
