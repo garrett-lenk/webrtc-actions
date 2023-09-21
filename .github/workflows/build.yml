@@ -207,16 +207,15 @@ jobs:
         working-directory: out
         run: |
           sed -i 's|:static_crt|:dynamic_crt|' src/build/config/win/BUILD.gn
-          sed -i 's|"/Zc:sizedDealloc-",|"/Zc:sizedDealloc-","/Zc:threadSafeInit-",|' src/build/config/win/BUILD.gn
           cat src/build/config/win/BUILD.gn
-
-      - name: Patch WebRTC to build shared library
-        shell: bash
-        working-directory: out/src
-        run: |
-          sed -i'.bkp' -e 's/rtc_static_library/rtc_shared_library/g' ./BUILD.gn
-          sed -i'.bkp' -e 's/complete_static_lib/#complete_static_lib/g' ./BUILD.gn
-          cat ./BUILD.gn
+      # sed -i 's|"/Zc:sizedDealloc-",|"/Zc:sizedDealloc-","/Zc:threadSafeInit-",|' src/build/config/win/BUILD.gn
+      # - name: Patch WebRTC to build shared library
+      #   shell: bash
+      #   working-directory: out/src
+      #   run: |
+      #     sed -i'.bkp' -e 's/rtc_static_library/rtc_shared_library/g' ./BUILD.gn
+      #     sed -i'.bkp' -e 's/complete_static_lib/#complete_static_lib/g' ./BUILD.gn
+      #     cat ./BUILD.gn
 
       - name: Install arm64 arch
         shell: bash
