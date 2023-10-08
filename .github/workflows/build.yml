@@ -201,13 +201,13 @@ jobs:
         run: |
           gclient sync --no_bootstrap --shallow --no-history -vv --revision ${{ needs.config.outputs.revision }}
 
-      - name: Patch the WebRTC sources (allow dynamic crt on windows)
-        if: ${{ matrix.target_os == 'win' }}
-        shell: bash
-        working-directory: out
-        run: |
-          sed -i 's|:static_crt|:dynamic_crt|' src/build/config/win/BUILD.gn
-          cat src/build/config/win/BUILD.gn
+      # - name: Patch the WebRTC sources (allow dynamic crt on windows)
+      #   if: ${{ matrix.target_os == 'win' }}
+      #   shell: bash
+      #   working-directory: out
+      #   run: |
+      #     sed -i 's|:static_crt|:dynamic_crt|' src/build/config/win/BUILD.gn
+      #     cat src/build/config/win/BUILD.gn
       # sed -i 's|"/Zc:sizedDealloc-",|"/Zc:sizedDealloc-","/Zc:threadSafeInit-",|' src/build/config/win/BUILD.gn
       # - name: Patch WebRTC to build shared library
       #   shell: bash
@@ -283,7 +283,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.TEMP_ARTIFACT }}-release
-          path: out/src/out/${{ matrix.library_name }}
+          path: out/src/out/${{ steps.combine-release.outputs.library }}
           #libwebrtc.so
           #${{ steps.combine-release.outputs.library }}
           retention-days: 1
