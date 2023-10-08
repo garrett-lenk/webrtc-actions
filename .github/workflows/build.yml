@@ -175,10 +175,10 @@ jobs:
           sudo dpkg --add-architecture i386
           sudo apt-get install clang gcc gcc-multilib g++ g++-multilib
 
-      - name: Install Ninja
-        shell: bash
-        run: |
-          pip install ninja
+      # - name: Install Ninja
+      #   shell: bash
+      #   run: |
+      #     pip install ninja
 
       - name: Install depot tools
         shell: bash
